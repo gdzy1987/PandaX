@@ -19,17 +19,6 @@ server:
     enable: false
     key-file: ./resource/default.key
     cert-file: ./resource/default.pem
-  # 静态资源
-  static:
-    - relative-path: /assets
-      root: ./static/assets
-  # 静态文件
-  static-file:
-    - relative-path: /
-      filepath: ./static/index.html
-    - relative-path: /favicon.ico
-      filepath: ./static/favicon.ico
-
 jwt:
   key: mykey
   # 过期时间单位秒 7天

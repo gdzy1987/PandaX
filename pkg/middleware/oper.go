@@ -1,15 +1,15 @@
 package middleware
 
 import (
+	"github.com/XM-GO/PandaKit/restfulx"
+	"github.com/XM-GO/PandaKit/utils"
 	"net/http"
 	"pandax/apps/log/entity"
 	"pandax/apps/log/services"
-	"pandax/base/ginx"
-	"pandax/base/utils"
 )
 
-func OperationHandler(rc *ginx.ReqCtx) error {
-	c := rc.GinCtx
+func OperationHandler(rc *restfulx.ReqCtx) error {
+	c := rc.Request
 	// 请求操作不做记录
 	if c.Request.Method == http.MethodGet || rc.LoginAccount == nil {
 		return nil
@@ -23,8 +23,8 @@ func OperationHandler(rc *ginx.ReqCtx) error {
 		Method:       c.Request.Method,
 		OperName:     rc.LoginAccount.UserName,
 		OperUrl:      c.Request.URL.Path,
-		OperIp:       c.ClientIP(),
-		OperLocation: utils.GetRealAddressByIP(c.ClientIP()),
+		OperIp:       c.Request.RemoteAddr,
+		OperLocation: utils.GetRealAddressByIP(c.Request.RemoteAddr),
 		OperParam:    "",
 		Status:       "0",
 	}

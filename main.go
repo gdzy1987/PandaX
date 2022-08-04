@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
+	"github.com/XM-GO/PandaKit/config"
+	"github.com/XM-GO/PandaKit/logger"
+	"github.com/XM-GO/PandaKit/restfulx"
+	"github.com/XM-GO/PandaKit/starter"
 	"github.com/spf13/cobra"
+	"log"
 	"os"
+	"os/signal"
 	"pandax/apps/job/jobs"
-	"pandax/base/config"
-	"pandax/base/ginx"
-	"pandax/base/logger"
-	"pandax/base/starter"
 	"pandax/pkg/global"
 	"pandax/pkg/initialize"
 	"pandax/pkg/middleware"
+	"syscall"
 )
 
 var (
@@ -31,17 +35,28 @@ var rootCmd = &cobra.Command{
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		ginx.UseAfterHandlerInterceptor(middleware.OperationHandler)
+		restfulx.UseAfterHandlerInterceptor(middleware.OperationHandler)
 		// gin前置 函数
-		ginx.UseBeforeHandlerInterceptor(ginx.PermissionHandler)
+		restfulx.UseBeforeHandlerInterceptor(restfulx.PermissionHandler)
 		// gin后置 函数
-		ginx.UseAfterHandlerInterceptor(ginx.LogHandler)
+		restfulx.UseAfterHandlerInterceptor(restfulx.LogHandler)
 		go func() {
 			// 启动系统调度任务
 			jobs.InitJob()
 			jobs.Setup()
 		}()
-		starter.RunWebServer(initialize.InitRouter())
+
+		app := initialize.InitRouter()
+
+		app.Start(context.TODO())
+		stop := make(chan os.Signal, 1)
+		signal.Notify(stop, syscall.SIGTERM, os.Interrupt)
+		<-stop
+
+		if err := app.Stop(context.TODO()); err != nil {
+			log.Fatal("fatal app stop: %s", err)
+			os.Exit(-3)
+		}
 	},
 }
 
