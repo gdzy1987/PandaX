@@ -3,9 +3,11 @@ package initialize
 import (
 	"github.com/XM-GO/PandaKit/biz"
 	devEntity "pandax/apps/develop/entity"
+	flowEntity "pandax/apps/flow/entity"
 	jobEntity "pandax/apps/job/entity"
 	logEntity "pandax/apps/log/entity"
 	resSourceEntity "pandax/apps/resource/entity"
+	ruleEntity "pandax/apps/rule/entity"
 	"pandax/apps/system/entity"
 	"pandax/pkg/global"
 )
@@ -38,6 +40,17 @@ func InitTable() {
 				devEntity.DevGenTableColumn{},
 				resSourceEntity.ResOss{},
 				resSourceEntity.ResEmail{},
+
+				flowEntity.FlowWorkClassify{},
+				flowEntity.FlowWorkInfo{},
+				flowEntity.FlowWorkTemplates{},
+				flowEntity.FlowWorkOrder{},
+				flowEntity.FlowWorkOrderTemplate{},
+				flowEntity.FlowWorkStage{},
+				flowEntity.FlowWorkTask{},
+				flowEntity.FlowWorkTaskHistory{},
+
+				ruleEntity.RuleNotice{},
 			),
 			"初始化表失败")
 	}
