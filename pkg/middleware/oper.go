@@ -17,25 +17,27 @@ func OperationHandler(rc *restfulx.ReqCtx) error {
 	if rc.RequiredPermission == nil || !rc.RequiredPermission.NeedToken {
 		return nil
 	}
-	oper := entity.LogOper{
-		Title:        rc.LogInfo.Description,
-		BusinessType: "0",
-		Method:       c.Request.Method,
-		OperName:     rc.LoginAccount.UserName,
-		OperUrl:      c.Request.URL.Path,
-		OperIp:       c.Request.RemoteAddr,
-		OperLocation: utils.GetRealAddressByIP(c.Request.RemoteAddr),
-		OperParam:    "",
-		Status:       "0",
-	}
-	if c.Request.Method == "POST" {
-		oper.BusinessType = "1"
-	} else if c.Request.Method == "PUT" {
-		oper.BusinessType = "2"
-	} else if c.Request.Method == "DELETE" {
-		oper.BusinessType = "3"
-	}
-	services.LogOperModelDao.Insert(oper)
+	go func() {
+		oper := entity.LogOper{
+			Title:        rc.LogInfo.Description,
+			BusinessType: "0",
+			Method:       c.Request.Method,
+			OperName:     rc.LoginAccount.UserName,
+			OperUrl:      c.Request.URL.Path,
+			OperIp:       c.Request.RemoteAddr,
+			OperLocation: utils.GetRealAddressByIP(c.Request.RemoteAddr),
+			OperParam:    "",
+			Status:       "0",
+		}
+		if c.Request.Method == "POST" {
+			oper.BusinessType = "1"
+		} else if c.Request.Method == "PUT" {
+			oper.BusinessType = "2"
+		} else if c.Request.Method == "DELETE" {
+			oper.BusinessType = "3"
+		}
+		services.LogOperModelDao.Insert(oper)
+	}()
 
 	return nil
 }
